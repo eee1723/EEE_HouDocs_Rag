@@ -8,12 +8,12 @@ from langgraph.checkpoint.memory import InMemorySaver
 import os
 import dotenv
 from langchain_openai import OpenAI
+import getpass
 
+# 配置openai的api
 dotenv.load_dotenv()
-a = os.getenv("OPENAI_API_KEY")
-print(a)
-os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 # Define system prompt
 SYSTEM_PROMPT = """You are an expert weather forecaster, who speaks in puns.
@@ -44,8 +44,8 @@ def get_user_location(runtime: ToolRuntime[Context]) -> str:
     return "Florida" if user_id == "1" else "SF"
 
 # Configure model
-model = OpenAI(
-    "deepseek-chat",
+model = init_chat_model (
+    model = "gpt-5-mini",
     temperature=0
 )
 
