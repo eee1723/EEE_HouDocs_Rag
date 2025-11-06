@@ -48,22 +48,32 @@ splitter = HTMLSemanticPreservingSplitter(
 )
 
 documents = splitter.split_text(html_string)
-print(documents[0])
+
 
 # 加载嵌入模型
 from langchain_openai import OpenAIEmbeddings
+import chromadb
 
 embeddings = OpenAIEmbeddings(model="text-embedding-3-large")
 
 # 向量存储
 from langchain_chroma import Chroma
 
-vector_store = Chroma(
-    collection_name="example_collection",
-    embedding_function=embeddings,
-    persist_directory="./chroma_langchain_db",  # Where to save data locally, remove if not necessary
+client = chromadb.PersistentClient(path="./chroma_langchain_db")
+vector_store_from_client = Chroma(
+    client=client,
+    collection_name="collection_name",
+    embedding_function=embeddings
 )
 
+vector_store_from_client.add_documents(documents=documents)
+results = vector_store_from_client.similarity_search(
+    "How to use the network",
+    k=2,
+    filter={"source": "tweet"},
+)
+for res in results:
+    print(f"* {res.page_content} [{res.metadata}]")
 
 # 定义提示词模板
 prompt = ChatPromptTemplate.from_template('''
@@ -77,9 +87,9 @@ prompt = ChatPromptTemplate.from_template('''
     如果已知信息包含用户问题的答案，请直接回答用户的问题，绝不可以编造任何不确定的信息。
     ''')
 
-def query_vector(info):
-    retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
-    docs = retriever.get_relevant_documents(info["question"])
+# def query_vector(info):
+#     retriever = vector_store.as_retriever(search_type="similarity", search_kwargs={"k": 3})
+#     docs = retriever.get_relevant_documents(info["question"])
 
 # 初始化大模型
 model = ChatOpenAI(
