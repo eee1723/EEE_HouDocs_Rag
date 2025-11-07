@@ -21,7 +21,7 @@ from bs4 import Tag
 from langchain_text_splitters import HTMLSemanticPreservingSplitter
 
 # 使用requests获取HTML内容
-url = "https://www.sidefx.com/docs/houdini/index.html"
+url = "https://www.sidefx.com/docs/houdini/model/packed.html"
 response = requests.get(url)
 html_string = response.text  # 这是HTML源码字符串
 headers_to_split_on = [
@@ -68,12 +68,14 @@ vector_store_from_client = Chroma(
 
 vector_store_from_client.add_documents(documents=documents)
 results = vector_store_from_client.similarity_search(
-    "How to use the network",
-    k=2,
-    filter={"source": "tweet"},
+    "How to Convert SOP geometry into a packed primitive",
+    k=5,
+    # filter={"source": "tweet"},
 )
+index = 0
 for res in results:
-    print(f"* {res.page_content} [{res.metadata}]")
+    print(f"*{index}{res.page_content} [{res.metadata}]")
+    index += 1
 
 # 定义提示词模板
 prompt = ChatPromptTemplate.from_template('''
