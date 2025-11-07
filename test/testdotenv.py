@@ -3,5 +3,13 @@ import os
 dotenv.load_dotenv()
 
 
-a = os.getenv("A")
-print("A=", type(a))
+from langchain_openai import ChatOpenAI
+
+
+llm = ChatOpenAI(
+    model = "gpt-5-mini",
+
+)
+
+response = llm.invoke("说一个笑话")
+print(response)
