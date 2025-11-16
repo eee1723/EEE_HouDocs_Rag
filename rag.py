@@ -4,7 +4,7 @@ import requests
 
 from langchain_openai import ChatOpenAI
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.output_parsers import StrOutputParser
+from langchain_core.output_parsers import StrOutputParser, BaseOutputParser
 from langchain_text_splitters import HTMLSemanticPreservingSplitter
 
 # 设置大模型APIkey
@@ -13,12 +13,6 @@ os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
 os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
 
-
-
-
-# 文档切分
-from bs4 import Tag
-from langchain_text_splitters import HTMLSemanticPreservingSplitter
 
 # 使用requests获取HTML内容
 url = "https://www.sidefx.com/docs/houdini/model/packed.html"
@@ -30,17 +24,12 @@ headers_to_split_on = [
 ]
 
 
-# def code_handler(element: Tag) -> str:
-#     data_lang = element.get("data-lang")
-#     code_format = f"<code:{data_lang}>{element.get_text()}</code>"
-
-#     return code_format
 
 
 splitter = HTMLSemanticPreservingSplitter(
     headers_to_split_on=headers_to_split_on,
     separators=["\n\n", "\n", ". ", "! ", "? "],
-    max_chunk_size=50,
+    max_chunk_size=250,
     preserve_images=True,
     preserve_videos=True,
     elements_to_preserve=["table", "ul", "ol", "code"],

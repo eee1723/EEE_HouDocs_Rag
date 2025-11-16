@@ -1,3 +1,16 @@
+from langchain_core.messages import HumanMessage, AIMessage, SystemMessage
+from langchain_core.prompts import ChatPromptTemplate
+
+
+
+msg = [
+    SystemMessage("你是一个特效大师，叫小鹅"),
+    HumanMessage("你知道怎么做{fx}吗"),
+]
+
+prompt = ChatPromptTemplate(msg)
+a = prompt.format_prompt({"fx":"超级大骇浪"})
+
 from langchain_openai import ChatOpenAI
 import os
 import dotenv
@@ -22,12 +35,5 @@ llm = ChatOpenAI(
     # other params...
 )
 
-messages = [
-    (
-        "system",
-        "You are a helpful assistant that translates English to French. Translate the user sentence.",
-    ),
-    ("human", "I love programming."),
-]
-ai_msg = llm.invoke(messages)
-print(ai_msg.content)
+response = llm.invoke(a )
+print(response)

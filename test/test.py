@@ -1,20 +1,33 @@
-from openai import OpenAI
+from langchain_openai import ChatOpenAI
+import os
+import dotenv
 
-if __name__ == '__main__':
-    client = OpenAI(
-        # openai系列的sdk，包括langchain，都需要这个/v1的后缀
-        base_url='https://api.openai-proxy.org/v1',
-        api_key='sk-72E6ixHME41RR4hTOcIdT3NHcuNEcdTVYA5ioLdzoqU4oz5L',
-    )
+dotenv.load_dotenv()
+os.environ["OPENAI_BASE_URL"] = os.getenv("OPENAI_BASE_URL")
+os.environ["OPENAI_API_KEY"] = os.getenv("OPENAI_API_KEY")
 
-    chat_completion = client.chat.completions.create(
-        messages=[
-            {
-                "role": "user",
-                "content": "Say hi",
-            }
-        ],
-        model="gpt-4o-mini", # 如果是其他兼容模型，比如deepseek，直接这里改模型名即可，其他都不用动
-    )
 
-    print(chat_completion)
+llm = ChatOpenAI(
+    model = "gpt-5-mini",
+    temperature=0
+    # stream_usage=True,
+    # temperature=None,
+    # max_tokens=None,
+    # timeout=None,
+    # reasoning_effort="low",
+    # max_retries=2,
+    # api_key="...",  # if you prefer to pass api key in directly instead of using env vars
+    # base_url="...",
+    # organization="...",
+    # other params...
+)
+
+messages = [
+    (
+        "system",
+        "You are a helpful assistant that translates English to French. Translate the user sentence.",
+    ),
+    ("human", "I love programming."),
+]
+ai_msg = llm.invoke(messages)
+print(ai_msg.content)
